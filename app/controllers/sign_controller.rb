@@ -1,4 +1,4 @@
-class AccountController < ApplicationController
+class SignController < ApplicationController
   def sign
     if params.has_key?(:phone)
       params.require(:sms_ver_code)
@@ -20,6 +20,4 @@ class AccountController < ApplicationController
 
     render :json => {air_auth_token: @user[:air_auth_token]}
   end
-
-
 end
