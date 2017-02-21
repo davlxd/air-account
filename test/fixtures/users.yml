@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  wechat_openid: MyString
+  phone: MyString
+  air_auth_token: MyString
+
+two:
+  wechat_openid: MyString
+  phone: MyString
+  air_auth_token: MyString
