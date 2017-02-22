@@ -16,9 +16,9 @@ class SignController < ApplicationController
     render json: {message: 'Verification code expired'}, status: 400 and return if (Time.now - ver_code_sms[:created_at]) > 60 * 5
 
     user = User.find_by(phone: params[:phone])
-    user = User.new(phone: params[:phone], air_auth_token: SecureRandom.uuid) if @user.nil?
+    user = User.new(phone: params[:phone], air_auth_token: SecureRandom.uuid) if user.nil?
+    user.save!
 
-    user.save! if user[:id].nil?
     render json: {air_auth_token: user[:air_auth_token]}
   end
 
@@ -35,9 +35,9 @@ class SignController < ApplicationController
     render json: res_json, status: 400 and return if res_json.has_key? 'errcode'
 
     user = User.find_by(wechat_openid: params[:wechat_openid])
-    user = User.new(wechat_openid: params[:wechat_openid], air_auth_token: SecureRandom.uuid, wechat_userinfo: res_json) if @user.nil?
+    user = User.new(wechat_openid: params[:wechat_openid], air_auth_token: SecureRandom.uuid, wechat_userinfo: res_json) if user.nil?
+    user.save!
 
-    user.save! if user[:id].nil?
     render json: {air_auth_token: user[:air_auth_token]}
   end
 end
