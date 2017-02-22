@@ -2,7 +2,11 @@ class SignController < ApplicationController
   def sign
     if params.has_key?(:phone)
       params.require(:sms_ver_code)
-      # TODO: sms_ver_cde validation
+
+      ver_code_sms = SmsMessage.where(phone: params[:phone], ver_code: params[:sms_ver_code]).order(created_at: :desc).first
+      render json: { message: 'Verification code is invalid' }, status: 400 and return if ver_code_sms.nil?
+      render json: { message: 'Verification code expired' }, status: 400 and return if (Time.now - ver_code_sms[:created_at]) > 60 * 5
+
       @user = User.find_by(phone: params[:phone])
       @user = User.new(phone: params[:phone], air_auth_token: SecureRandom.uuid) if @user.nil?
 
