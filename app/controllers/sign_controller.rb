@@ -11,13 +11,12 @@ class SignController < ApplicationController
       @user = User.new(wechat_openid: params[:wechat_openid], air_auth_token: SecureRandom.uuid) if @user.nil?
 
     else
-      render status: 400 and return
+      logger.error 'Client sign with either phone or wechat'
+      render json: { message: 'Sign with unsupported parameter' }, status: 400 and return
     end
 
-    if @user[:id].nil? and not @user.save
-      render status: 400 and return
-    end
+    @user.save! if @user[:id].nil?
 
-    render :json => {air_auth_token: @user[:air_auth_token]}
+    render json: { air_auth_token: @user[:air_auth_token] }
   end
 end
