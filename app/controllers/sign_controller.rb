@@ -7,6 +7,7 @@ class SignController < ApplicationController
     render json: {message: 'Sign with unsupported parameter'}, status: 400
   end
 
+
   private
   def sign_with_phone
     params.require(:sms_ver_code)
@@ -18,6 +19,7 @@ class SignController < ApplicationController
     user = User.create_with(air_auth_token: SecureRandom.uuid, status: User.statuses[:live]).find_or_create_by!(phone: params[:phone])
     render json: {air_auth_token: user[:air_auth_token]}
   end
+
 
   def sign_with_wechat
     params.require(:wechat_access_token)
