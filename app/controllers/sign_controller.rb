@@ -11,14 +11,11 @@ class SignController < ApplicationController
   def sign_with_phone
     params.require(:sms_ver_code)
 
-    ver_code_sms = SmsMessage.where(phone: params[:phone], ver_code: params[:sms_ver_code]).order(created_at: :desc).first
+    ver_code_sms = SmsMessage.order(created_at: :desc).find_by_phone_and_ver_code(params[:phone], params[:sms_ver_code])
     render json: {message: 'Verification code is invalid'}, status: 400 and return if ver_code_sms.nil?
     render json: {message: 'Verification code expired'}, status: 400 and return if (Time.now - ver_code_sms[:created_at]) > 60 * 5
 
-    user = User.find_by(phone: params[:phone])
-    user = User.new(phone: params[:phone], air_auth_token: SecureRandom.uuid) if user.nil?
-    user.save!
-
+    user = User.create_with(air_auth_token: SecureRandom.uuid).find_or_create_by!(phone: params[:phone])
     render json: {air_auth_token: user[:air_auth_token]}
   end
 
@@ -34,10 +31,7 @@ class SignController < ApplicationController
 
     render json: res_json, status: 400 and return if res_json.has_key? 'errcode'
 
-    user = User.find_by(wechat_openid: params[:wechat_openid])
-    user = User.new(wechat_openid: params[:wechat_openid], air_auth_token: SecureRandom.uuid, wechat_userinfo: res_json) if user.nil?
-    user.save!
-
+    user = User.create_with(air_auth_token: SecureRandom.uuid, wechat_userinfo: res_json).find_or_create_by!(wechat_openid: params[:wechat_openid])
     render json: {air_auth_token: user[:air_auth_token]}
   end
 end
